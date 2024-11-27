@@ -1,4 +1,3 @@
-# app/services/transcription_service.py
 from app.utils.external_apis import deepgram_transcription
 from app.utils.helpers import get_youtube_video, upload_to_gcp, delete_gcp_file
 
