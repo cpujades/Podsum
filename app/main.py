@@ -1,9 +1,8 @@
 from fastapi import FastAPI
-
 from mangum import Mangum
 import uvicorn
-
 from app.routers import transcription
+
 
 app = FastAPI()
 handler = Mangum(app)
@@ -17,5 +16,4 @@ def read_root():
 
 
 if __name__ == "__main__":
-
     uvicorn.run(app, host="0.0.0.0", port=8000)
