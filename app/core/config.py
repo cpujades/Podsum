@@ -8,9 +8,10 @@ load_dotenv()
 
 class Config:
     ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
-    DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
+    DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API")
     VOYAGE_API_KEY = os.getenv("VOYAGE_API_KEY")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
     SUPABASE_URL = os.getenv("SUPABASE_URL")
     SUPABASE_KEY = os.getenv("SUPABASE_SECRET")
