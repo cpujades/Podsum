@@ -7,17 +7,26 @@ load_dotenv()
 
 
 class Config:
-    ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
-    DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API")
-    VOYAGE_API_KEY = os.getenv("VOYAGE_API_KEY")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    GROK_API_KEY = os.getenv("GROK_API_KEY")
+
+    DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API")
+
+    VOYAGE_API_KEY = os.getenv("VOYAGE_API_KEY")
+
+    # Google Cloud credentials
     GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
     SUPABASE_URL = os.getenv("SUPABASE_URL")
     SUPABASE_KEY = os.getenv("SUPABASE_SECRET")
-
     # Create Supabase client
     SUPABASE_CLIENT = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+    DB_CONNECTION = os.getenv("DB_CONNECTION")
+
+    SYSTEM_PROMPT = os.getenv("SYSTEM_PROMPT")
 
 
 config = Config()

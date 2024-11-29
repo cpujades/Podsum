@@ -5,6 +5,7 @@ import requests
 from datetime import timedelta
 import os
 from app.core.config import config
+import tiktoken
 
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = config.GOOGLE_APPLICATION_CREDENTIALS
@@ -65,3 +66,19 @@ def delete_gcp_file(title):
     blob_name = f"{title}.mp4"
     blob = bucket.blob(blob_name)
     blob.delete()
+
+
+def count_tokens(text):
+    """
+    Counts the number of tokens in a given text.
+
+    Args:
+        text (str): The text to count the tokens in.
+
+    Returns:
+        int: The number of tokens in the text.
+    """
+    encoding = tiktoken.get_encoding("o200k_base")
+    num_tokens = len(encoding.encode(text))
+
+    return num_tokens
