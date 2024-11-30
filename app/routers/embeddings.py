@@ -11,7 +11,7 @@ router = APIRouter()
 @router.post("/embeddings", response_model=EmbeddingsResponse)
 async def create_transcription(request: EmbeddingsRequest):
     try:
-        response = await create_transcription_embeddings(request.query)
+        response = await create_transcription_embeddings(request.transcription)
         metadata = {
             "podcast_id": request.podcast_id,
             "user_id": request.user_id,
