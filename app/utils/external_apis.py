@@ -3,6 +3,8 @@ import requests
 from app.core.config import config
 from app.schemas.summarize import SummarizeFormat
 from openai import OpenAI
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 
 DEEPGRAM_API_KEY = config.DEEPGRAM_API_KEY
 
@@ -12,6 +14,15 @@ OPENAI_API_KEY = config.OPENAI_API_KEY
 GEMINI_API_KEY = config.GEMINI_API_KEY
 ANTHROPIC_API_KEY = config.ANTHROPIC_API_KEY
 GROK_API_KEY = config.GROK_API_KEY
+
+VOYAGEAI_API_KEY = config.VOYAGEAI_API_KEY
+
+voyageai_headers = {
+    "Authorization": "Bearer " + VOYAGEAI_API_KEY,
+    "content-type": "application/json",
+}
+
+voyageai_endpoint = "https://api.voyageai.com/v1/embeddings"
 
 
 def deepgram_transcription(file_url: str) -> str:
@@ -70,3 +81,27 @@ def summarize_podcast(transcript: str, model: str) -> str:
     summary = response.choices[0].message.parsed.summary
 
     return summary
+
+
+def create_embeddings(text, input_type):
+    voyageai_params = {
+        "model": "voyage-3",
+        "input_type": input_type,
+    }
+
+    if input_type == "document":
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1024, chunk_overlap=20
+        )
+        chunks = text_splitter.split_text(text)
+        voyageai_params["input"] = chunks
+    else:
+        voyageai_params["input"] = text
+
+    voyageai_response = requests.post(
+        voyageai_endpoint, headers=voyageai_headers, json=voyageai_params
+    )
+    voyageai_json = voyageai_response.json()
+    embeddings = voyageai_json["data"]
+
+    return embeddings

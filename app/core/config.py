@@ -14,7 +14,7 @@ class Config:
 
     DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API")
 
-    VOYAGE_API_KEY = os.getenv("VOYAGE_API_KEY")
+    VOYAGEAI_API_KEY = os.getenv("VOYAGEAI_API_KEY")
 
     # Google Cloud credentials
     GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")

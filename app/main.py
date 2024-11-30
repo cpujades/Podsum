@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from mangum import Mangum
 import uvicorn
-from app.routers import transcription
-from app.routers import summarize
+from app.routers import transcription, embeddings, summarize
 
 
 app = FastAPI()
@@ -10,6 +9,7 @@ handler = Mangum(app)
 
 app.include_router(transcription.router)
 app.include_router(summarize.router)
+app.include_router(embeddings.router)
 
 
 @app.get("/")
