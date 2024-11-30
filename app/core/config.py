@@ -27,6 +27,7 @@ class Config:
     DB_CONNECTION = os.getenv("DB_CONNECTION")
 
     SYSTEM_PROMPT = os.getenv("SYSTEM_PROMPT")
+    USER_PROMPT = os.getenv("USER_PROMPT")
 
 
 config = Config()

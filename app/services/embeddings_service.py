@@ -5,13 +5,36 @@ import vecs
 
 
 async def create_transcription_embeddings(text: str):
-    embeddings = create_embeddings(text, "document")
-    return embeddings
+    embeddings_dict = create_embeddings(text, "document")
+    return embeddings_dict
 
 
-async def insert_embeddings(embeddings, metadata):
+async def create_user_embeddings(text: str):
+    embeddings_dict = create_embeddings(text, "query")
+    query_embeddings = embeddings_dict["embeddings"][0]["embedding"]
+    return query_embeddings
+
+
+async def retrieve_important_passages(query_embeddings, podcast_id):
+    docs = vector_database("podcasts")
+    similar_embeddings = docs.query(
+        query_embeddings,
+        limit=3,
+        filters={"podcast_id": {"$eq": {podcast_id}}},
+    )
+
+    top_results = docs.fetch(similar_embeddings)
+
+    top_passages = [result[2]["text"] for result in top_results]
+
+    return top_passages
+
+
+async def insert_embeddings(embeddings_dict, metadata):
     docs = vector_database("podcasts")
     records = []
+
+    embeddings = embeddings_dict["embeddings"]
 
     for embedding in embeddings:
         vector_id = str(uuid.uuid4())
@@ -32,6 +55,7 @@ async def insert_embeddings(embeddings, metadata):
                     "podcast_id": metadata["podcast_id"],
                     "user_id": metadata["user_id"],
                     "chunk_id": embedding["index"],
+                    "text": embeddings_dict["text"][embedding["index"]],
                 },
             )
         )

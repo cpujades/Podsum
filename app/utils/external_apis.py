@@ -9,6 +9,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 DEEPGRAM_API_KEY = config.DEEPGRAM_API_KEY
 
 SYSTEM_PROMPT = config.SYSTEM_PROMPT
+USER_PROMPT = config.USER_PROMPT
 
 OPENAI_API_KEY = config.OPENAI_API_KEY
 GEMINI_API_KEY = config.GEMINI_API_KEY
@@ -53,7 +54,7 @@ def deepgram_transcription(file_url: str) -> str:
     return transcript
 
 
-def summarize_podcast(transcript: str, model: str) -> str:
+def summarize_podcast(transcript: str, model: str = "gemini-1.5-flash") -> str:
     if "grok" in model:
         api_key = GROK_API_KEY
         base_url = "https://api.x.ai/v1"
@@ -89,14 +90,14 @@ def create_embeddings(text, input_type):
         "input_type": input_type,
     }
 
-    if input_type == "document":
+    if len(text) > 1024:
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1024, chunk_overlap=20
         )
         chunks = text_splitter.split_text(text)
         voyageai_params["input"] = chunks
     else:
-        voyageai_params["input"] = text
+        voyageai_params["input"] = [text]
 
     voyageai_response = requests.post(
         voyageai_endpoint, headers=voyageai_headers, json=voyageai_params
@@ -104,4 +105,44 @@ def create_embeddings(text, input_type):
     voyageai_json = voyageai_response.json()
     embeddings = voyageai_json["data"]
 
-    return embeddings
+    embeddings_dict = {
+        "embeddings": embeddings,
+        "text": chunks,
+    }
+
+    return embeddings_dict
+
+
+def answer_user_message(user_question, top_passages, model: str = "gemini-1.5-flash"):
+    if "grok" in model:
+        api_key = GROK_API_KEY
+        base_url = "https://api.x.ai/v1"
+    elif "gemini" in model:
+        api_key = GEMINI_API_KEY
+        base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"
+    else:
+        api_key = OPENAI_API_KEY
+        base_url = "https://api.openai.com/v1"
+
+    client = OpenAI(api_key=api_key, base_url=base_url)
+    response = client.chat.completions.create(
+        model=model,
+        max_completion_tokens=2048,
+        messages=[
+            {
+                "role": "system",
+                "content": USER_PROMPT,
+            },
+            {
+                "role": "user",
+                "content": f"""
+                <podcast_passages> {top_passages} </podcast_passages>
+                <user_question> {user_question} </user_question>
+                """,
+            },
+        ],
+    )
+
+    answer = response.choices[0].message.content
+
+    return answer
